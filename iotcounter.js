@@ -12,8 +12,12 @@ var PLACE_LATITUDE = "34.8760";     //naraba^2の場所（緯度） ★暫定
 var PLACE_LONGITUDE = "135.8760";   //naraba^2の場所（経度） ★暫定
 var IMAGE_OPEN = "image_open.jpg";
 var IMAGE_NOT_OPEN = "image_not_open.jpg";
-var STRING_OPEN = "naraba^2 OPENしてるよ～。早く来て！";
-var STRING_NOT_OPEN = "naraba^2 まだOPENしてないよ。もうちょっと待って";
+var STRING_OPEN = "OPENしてるよ～。早く来て！";
+var STRING_OPEN2 = "はやくはやく～"
+var STRING_NOT_OPEN = "まだOPENしてないよ。もうちょっと待って";
+var STRING_NOT_OPEN2 = "ごめんよ～花村ねぇさんに問い合わせて";
+var BGCOLOR_BLUE = "#4169e1";
+var BGCOLOR_RED = "#FF7F50";
 //===== 設定(ここまで) =======================================
 
 var last_update;
@@ -55,13 +59,22 @@ function doRequest(req, res) {
 				
 				//出力！
                 var open_status_image;
+                var open_status_string;
+                var open_status_bgcolor;
+                var open_status_callbackstring;
+            
+            
                 if( today_is == 1 ){
                     open_status_image = IMAGE_OPEN;
                     open_status_string = STRING_OPEN;
+                    open_status_bgcolor = BGCOLOR_BLUE;
+                    open_status_callbackstring = STRING_OPEN2;
                 }
                 else{
                     open_status_image = IMAGE_NOT_OPEN;
                     open_status_string = STRING_NOT_OPEN;
+                    open_status_bgcolor = BGCOLOR_RED;
+                    open_status_callbackstring = STRING_NOT_OPEN2;
                 }
             
             console.log("open_status_string="+open_status_string+"today_is="+today_is);
@@ -74,9 +87,13 @@ function doRequest(req, res) {
 	                replace(/@content1@/g, string1).
 	                replace(/@content2@/g, string2);
 */
+            
+            
                 var data2 = data.
 	                replace(/@content1@/g, open_status_string).
-	                replace(/@content2@/g, open_status_image);
+	                replace(/@content2@/g, open_status_image).
+                    replace(/@content3@/g, open_status_bgcolor).
+                    replace(/@content4@/g, open_status_callbackstring);
 
             
 				res.writeHead(200, {'Content-Type': 'text/html'});

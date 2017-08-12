@@ -13,10 +13,22 @@
  
  
 <body>
+<script type="text/javascript">
+function show_message(text){
+	alert(text);
 
-  <H1>
-      @content1@
-  </H1>
+}
+</script>
+
+  <H2>
+     今、現在のnaraba^2 は、
+  </H2>
+  
+    <input type="button" value="@content1@" 
+        style="background-color:@content3@;color:#FFFFFF;font-size:50pt" 
+        onClick="show_message('@content4@')">
+         
+         
     <!--
    <img src=@content2@ width="100%" alt="test">
     -->
@@ -29,7 +41,6 @@
     </div>
     -->
 
-<BR><BR>
 
 
 
