@@ -24,25 +24,33 @@ function show_message(text){
      今、現在のnaraba^2 は、
   </H2>
   
+  <!--
     <input type="button" value="@content1@" 
         style="background-color:@content3@;color:#FFFFFF;font-size:50pt" 
         onClick="show_message('@content4@')">
-         
-         
-    <!--
-   <img src=@content2@ width="100%" alt="test">
-    -->
-    
-   <!--
-    <div role="main">
-        <p><H1>@content1@</H1></p>
-		<p><H1>@content2@</H1></p>
-		<BR>
-    </div>
-    -->
+-->         
+<!--   
+    <img src="images/image_open.jpg" width="80%" alt="直接表示NG">
+-->
+        
+    <Div Align="center">    
+    <img src="images/<%=content2 %>" width="50%" alt="<%=content1 %>">
+    </Div>
+      
+<!--
+content1= <%=content1 %>
+content2= <%=content2 %>
+content3= <%=content3 %>
+content4= <%=content4 %>
+-->
 
 
 
+<Div Align="right">
+produced by 
+<img src="images/CodeForNara_logo.png" alt="CODE for NARA">
+<img src="images/encounter_logo.png" alt="えんカウンター">
+</Div>
 
 </body>
  

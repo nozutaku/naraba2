@@ -1,11 +1,22 @@
 var http = require('http');
 var request = require('request');
 var fs = require('fs');
+var express = require('express');
+var ejs = require('ejs');
 
-var server = http.createServer();
-server.on('request', doRequest);
-server.listen(process.env.PORT, process.env.IP);
-console.log('Server running!');
+//var server = http.createServer();
+//server.on('request', doRequest);
+//server.listen(process.env.PORT, process.env.IP);
+
+
+var app = express();
+
+app.set('port', (process.env.PORT || 5000));
+app.use(express.static(__dirname + '/public'));
+
+app.listen(app.get('port'), function() {
+  console.log("Node app is running at localhost:" + app.get('port'))
+});
 
 //===== 設定(ここから) =======================================
 var PLACE_LATITUDE = "34.8760";     //naraba^2の場所（緯度） ★暫定
@@ -22,10 +33,14 @@ var BGCOLOR_RED = "#FF7F50";
 
 var last_update;
 
-// リクエストの処理
-function doRequest(req, res) {
-
-	// KintoneDBから取得
+//コンテンツ表示メイン処理
+app.get('/', function(req, res) {
+  console.log("START app.get");
+  
+  var data = fs.readFileSync('./views/index.ejs', 'UTF8');
+  
+  /* ---- */
+  // KintoneDBから取得
 	var options = {
 		url: 'https://v2urc.cybozu.com/k/v1/records.json?app=17',
 		headers: {'X-Cybozu-API-Token': '4DRIq9OCEiwk8pqAkYN5WG5tmQ41QZ5Mak8FRBli'},
@@ -35,15 +50,11 @@ function doRequest(req, res) {
 		if(!error && response.statusCode == 200){
 				console.log("get success!");
 
-
-				//ファイルを同期型で読む
-				var data = fs.readFileSync('./index.html', 'UTF-8');
-
 				var num = Object.keys(body.records).length;
 				console.log("num = " + num);
 				var total_count=0;
 				var today_count=0;
-                var today_is=0;
+        var today_is=0;
 
 				for (var i = 0; i < num; i++){
 
@@ -79,26 +90,18 @@ function doRequest(req, res) {
             
             console.log("open_status_string="+open_status_string+"today_is="+today_is);
             
-/*
-				var string1 = "today = " + String(today_count);
-				var string2 = "total = " + String(total_count);
 
-	            var data2 = data.
-	                replace(/@content1@/g, string1).
-	                replace(/@content2@/g, string2);
-*/
-            
-            
-                var data2 = data.
-	                replace(/@content1@/g, open_status_string).
-	                replace(/@content2@/g, open_status_image).
-                    replace(/@content3@/g, open_status_bgcolor).
-                    replace(/@content4@/g, open_status_callbackstring);
+            var data2 = ejs.render( data, {
+              content1: open_status_string,
+              content2: open_status_image,
+              content3: open_status_bgcolor,
+              content4: open_status_callbackstring
+            });
+   
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write(data2);
+            res.end();
 
-            
-				res.writeHead(200, {'Content-Type': 'text/html'});
-				res.write(data2);
-				res.end();
 
 
 		}else{
@@ -110,34 +113,9 @@ function doRequest(req, res) {
 		}
 	});
 
+});
 
 
-
-
-/*********** DB読み出しが非同期処理のためうまくいかない(ここから) *****
-	fs.readFile('./index.html', 'UTF-8',
-		function(err, data){
-
-			var count = getDB();
-			console.log("before show count = " + count);
-
-			if( count != 0){
-				var string1 = "today = xx  <- coming soon";
-				var string2 = "total = " + String(count);
-
-
-	            var data2 = data.
-	                replace(/@content1@/g, string1).
-	                replace(/@content2@/g, string2);
-
-				res.writeHead(200, {'Content-Type': 'text/html'});
-				res.write(data2);
-				res.end();
-			}
-		});
-********** DB読み出しが非同期処理のためうまくいかない(ここまで) ******/
-
-}
 
 // kintone databaseから情報を取り出す（本処理をメイン処理doRequestに入れるので下記利用しない）
 function getDB(){
