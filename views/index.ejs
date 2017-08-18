@@ -16,6 +16,34 @@
 <script type="text/javascript">
 function show_message(text){
 	alert(text);
+}
+function send_command(command){
+
+	var xhr = new XMLHttpRequest();
+
+	var send_URL = "/api/command/"+command;
+  xhr.open("POST", send_URL, true);
+
+	xhr.onreadystatechange = function(){
+	    var READYSTATE_COMPLETED = 4;
+	    var HTTP_STATUS_OK = 200;
+		//console.log("onreadystatechange log: readyState="+this.readyState + " status="+this.status);
+
+	    if( this.readyState == READYSTATE_COMPLETED
+	     && this.status == HTTP_STATUS_OK )
+	    {
+	        // レスポンスの表示
+	        console.log( this.responseText );
+	    }
+	}
+
+
+	xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+//	xhr.setRequestHeader( 'Content-Type', 'text/plain' );
+
+	// データをリクエスト ボディに含めて送信する
+	xhr.send( null );
+
 
 }
 </script>
@@ -45,6 +73,12 @@ content4= <%=content4 %>
 -->
 
 
+<BR><BR>
+<form>
+　<button type="button" onclick="send_command('increment_like')">
+　<img src="./images/like_icon.png" width="50px"><br><%=content5 %>
+　</button>
+</form>
 
 <Div Align="right">
 produced by 
