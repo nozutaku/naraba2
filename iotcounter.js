@@ -107,38 +107,47 @@ app.get('/', function(req, res) {
       console.log("sql_text = "+sql_text );
         
       client.query( sql_text, function(err, result){
-      if(err){
-        console.log("CANNOT read table");
-        mode_openstatus = MODE_JUDGE_SENSOR;
-        show_page_by_sensor( res, data );
-        return;
-      }
-                
-
-      /////////////////////////////////////////////////////
-      //   DBからデータ取得
-      /////////////////////////////////////////////////////
-      console.log("DB length= " + result.rows.length);
-                
-      if( result.rows.length == 1 ){
-        mode_openstatus = result.rows[0].openstatus;
-        likecounter = result.rows[0].likecount;
-        
-        console.log("openstatus = "+ mode_openstatus);
-        console.log("likecount = "+ likecounter);
-        
-        if( mode_openstatus == MODE_JUDGE_SENSOR ){
+        if(err){
+          console.log("CANNOT read table");
+          mode_openstatus = MODE_JUDGE_SENSOR;
           show_page_by_sensor( res, data );
+          return;
+        }
+
+
+        /////////////////////////////////////////////////////
+        //   DBからデータ取得
+        /////////////////////////////////////////////////////
+        console.log("DB length= " + result.rows.length);
+
+        if( result.rows.length == 1 ){
+          mode_openstatus = result.rows[0].openstatus;
+          likecounter = result.rows[0].likecount;
+
+          console.log("openstatus = "+ mode_openstatus);
+          console.log("likecount = "+ likecounter);
+
+          if( mode_openstatus == MODE_JUDGE_SENSOR ){
+            show_page_by_sensor( res, data );
+          }
+          else{
+            send_main_display_data( res, data, 0, mode_openstatus );
+          }
         }
         else{
-          send_main_display_data( res, data, 0, mode_openstatus );
+          console.log("database length is wrong");
+          mode_openstatus = MODE_JUDGE_SENSOR;
+          show_page_by_sensor( res, data );
         }
-		  }
-		  else{
-		    console.log("database length is wrong");
-        mode_openstatus = MODE_JUDGE_SENSOR;
-        show_page_by_sensor( res, data );
-		  }
+        
+        client.end(function (err){
+          if(err){
+            console.log("invalid query.");
+            return;
+          }
+          console.log("db close1");
+        });
+        
 	   });
 		});
     pool.on('error', function (err, client) {
@@ -478,9 +487,16 @@ function update_database( command ){
                 if(err){
                     console.log("CANNOT read table");
                 }
-                
-			});
-		});
+              
+                client.end(function (err){
+                  if(err){
+                    console.log("invalid query.");
+                    return;
+                  }
+                  console.log("db close2");
+                });  
+			     });
+		    });
         pool.on('error', function (err, client) {
             console.log("idle client error", err.message, err.stack);
         });
